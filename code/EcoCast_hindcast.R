@@ -7,24 +7,23 @@
 # outdir (pathway to EcoCastRuns folder; e.g. outdir <- paste(path,"/EcoCastRuns/",sep=""))
 # ecocastdir (pathway to output/ folder; e.g. ecocastdir=paste(outdir,"output/",sep=""))
 
-EcoCast_hindcast=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecocastdir){
+EcoCast_hindcast=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecocastdir,namesrisk){
   source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_private/EcoCast-private/Code/Operationalizing_code/2_load_libraries.R",chdir = TRUE)
   for(date in date_range){
-    most_recent=as.character(as.Date(day)-1)
-    get_date=as.Date(day)
+    most_recent=as.character(as.Date(date)-1)
+    get_date=as.Date(date)
     get_date_composite=get_date-4
     
     ############ Check to see if 4_predict_CIs.R has been run for get_date, and if not
+    ############ Get a list of the paths of the env variables for get_date, or the most recent path if missing (none should be missing, this is a relic from real-time EcoCast)
+    FileList_get_date=list.files(paste(envdir,get_date,sep=""),pattern="*.grd$") # all the files from get_date
+    FileList_full=c("analysed_sst.grd","analysed_sst_sd.grd","l.blendChl.grd","l.eke_mean.grd","sla.grd","sla_sd.grd","ywind.grd") # all of the dynamic variables, static ones will always be there
+    FileList_missing=setdiff(FileList_full,FileList_get_date) # list of dynamic variables missing from get_date
+    FileList_final=list.files(paste(envdir,get_date,sep=""),pattern="*.grd$",full.names = TRUE) # start of final list to pass to preCIs script
+    return_list=list("FileList_final"=FileList_final,"FileList_missing"=FileList_missing)
+    
     if(!file.exists(paste0(outdir,"blshObs/predCIs/blshObs_pa_",get_date,"_highCI.grd"))){ 
       source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_private/EcoCast-private/Code/Operationalizing_code/4_predict_CIs.R",chdir = TRUE)
-      
-      ############ Get a list of the paths of the env variables for get_date, or the most recent path if missing (none should be missing, this is a relic from real-time EcoCast)
-      FileList_get_date=list.files(paste(envdir,get_date,sep=""),pattern="*.grd$") # all the files from get_date
-      FileList_full=c("analysed_sst.grd","analysed_sst_sd.grd","l.blendChl.grd","l.eke_mean.grd","sla.grd","sla_sd.grd","ywind.grd") # all of the dynamic variables, static ones will always be there
-      FileList_missing=setdiff(FileList_full,FileList_get_date) # list of dynamic variables missing from get_date
-      FileList_final=list.files(paste(envdir,get_date,sep=""),pattern="*.grd$",full.names = TRUE) # start of final list to pass to preCIs script
-      return_list=list("FileList_final"=FileList_final,"FileList_missing"=FileList_missing)
-      
       predCIs_master(get_date=get_date,envdir = envdir,moddir= moddir,outdir = outdir,path = path,final_path_list=return_list)
     }
     
