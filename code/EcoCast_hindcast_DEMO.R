@@ -5,8 +5,11 @@
 path = "/Volumes/SeaGate/ERD_DOM/EcoCast_CodeArchive"
 moddir<-paste(path,"/ModRepFiles/",sep="")
 envdir=paste(path,"/SpatialPredictions_EnvData/Satellite/",sep="") 
-outdir <- paste("/Volumes/SeaGate/ERD_DOM/EcoCast_CodeArchive_Trial/EcoCastRuns/",sep="")
+outdir <- paste("/Volumes/SeaGate/ERD_DOM/EcoCast_CodeArchive_Sensitivity/EcoCastRuns/",sep="")
 ecocastdir=paste(outdir,"output/",sep="")
+sensitivitydir="OO"
+
+source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/EcoCast_hindcast.R",chdir = TRUE)
 
 #########example with only one set of species weightings
 ecocastrisk<-c(-0.2,-0.2,-0.05,-0.9,0.9)
@@ -14,7 +17,7 @@ ecocastrisk<-c(-0.2,-0.2,-0.05,-0.9,0.9)
 date_range=as.character(seq(from=as.Date("2017-03-14"),to=as.Date("2017-03-16"),by="day"))
 namesrisk<-c("Blue shark bycatch","Blue shark tracking","Sea lions","Leatherbacks","Swordfish")
 
-EcoCast_hindcast(date_range=date_range,ecocastrisk=ecocastrisk,path=path,moddir=moddir,envdir=envdir,outdir=outdir,ecocastdir=ecocastdir,namesrisk=namesrisk)
+EcoCast_hindcast(date_range=date_range,ecocastrisk=ecocastrisk,path=path,moddir=moddir,envdir=envdir,outdir=outdir,ecocastdir=ecocastdir,namesrisk=namesrisk,sensitivitydir=sensitivitydir)
 
 
 #########example with multiple sets of species weightings
@@ -27,4 +30,4 @@ ecocastrisk_L=list(ecocastrisk1,ecocastrisk2,ecocastrisk3)
 date_range=as.character(seq(from=as.Date("2017-03-14"),to=as.Date("2017-03-16"),by="day"))
 namesrisk<-c("Blue shark bycatch","Blue shark tracking","Sea lions","Leatherbacks","Swordfish")
 
-lapply(ecocastrisk_L,FUN=EcoCast_hindcast,date_range=date_range,path=path,moddir=moddir,envdir=envdir,outdir=outdir,ecocastdir=ecocastdir,namesrisk=namesrisk)
+lapply(ecocastrisk_L,FUN=EcoCast_hindcast,date_range=date_range,path=path,moddir=moddir,envdir=envdir,outdir=outdir,ecocastdir=ecocastdir,namesrisk=namesrisk,sensitivitydir=sensitivitydir)

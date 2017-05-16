@@ -7,7 +7,7 @@
 # outdir (pathway to EcoCastRuns folder; e.g. outdir <- paste(path,"/EcoCastRuns/",sep=""))
 # ecocastdir (pathway to output/ folder; e.g. ecocastdir=paste(outdir,"output/",sep=""))
 
-EcoCast_hindcast=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecocastdir,namesrisk){
+EcoCast_hindcast=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecocastdir,namesrisk,sensitivitydir){
   source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_private/EcoCast-private/Code/Operationalizing_code/2_load_libraries.R",chdir = TRUE)
   for(date in date_range){
     most_recent=as.character(as.Date(date)-1)
@@ -22,13 +22,13 @@ EcoCast_hindcast=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecoca
     FileList_final=list.files(paste(envdir,get_date,sep=""),pattern="*.grd$",full.names = TRUE) # start of final list to pass to preCIs script
     return_list=list("FileList_final"=FileList_final,"FileList_missing"=FileList_missing)
     
-    if(!file.exists(paste0(outdir,"blshObs/predCIs/blshObs_pa_",get_date,"_highCI.grd"))){ 
-      source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_private/EcoCast-private/Code/Operationalizing_code/4_predict_CIs.R",chdir = TRUE)
-      predCIs_master(get_date=get_date,envdir = envdir,moddir= moddir,outdir = outdir,path = path,final_path_list=return_list)
+    if(!file.exists(paste0(outdir,"blshObs/predCIs/OO/blshObs_pa_",get_date,"__highCI.grd"))){ 
+      source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/4_predict_CIs.R",chdir = TRUE)
+      predCIs_master(get_date=get_date,envdir = envdir,moddir= moddir,outdir = outdir,path = path,final_path_list=return_list,sensitivitydir=sensitivitydir)
     }
     
     ############ Now run EcoCast for get_date
     source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/5_plot_EcoCast.R",chdir = TRUE)
-    Run_ecocast(preddate=get_date,moddir=moddir,outdir = outdir,ecocastdir = ecocastdir,namesrisk=namesrisk,ecocastrisk=ecocastrisk,final_path_list=return_list)
+    Run_ecocast(preddate=get_date,moddir=moddir,outdir = outdir,ecocastdir = ecocastdir,namesrisk=namesrisk,ecocastrisk=ecocastrisk,sensitivitydir=sensitivitydir,final_path_list=return_list)
   }
 }
