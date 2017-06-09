@@ -88,16 +88,15 @@ EcoCast_LOO=function(date_range,ecocastrisk,path,moddir,envdir,outdir,ecocastdir
       return_list=master_list[[i]]
       return_list=list("FileList_final"=master_list[[i]][[1]],"FileList_missing"=master_list[[i]][[2]],"name"=master_list[[i]][[3]])
     
-    if(!file.exists(paste0(outdir,"blshObs/predCIs/LOO/blshObs_pa_",get_date,"_",return_list$name,"_highCI.grd"))){ 
+    #if(!file.exists(paste0(outdir,"blshObs/predCIs/LOO/blshObs_pa_",get_date,"_",return_list$name,"_highCI.grd"))){ 
       source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/4_predict_CIs.R",chdir = TRUE)
       predCIs_master(get_date=get_date,envdir = envdir,moddir= moddir,outdir = outdir,path = path,final_path_list=return_list,sensitivitydir=sensitivitydir)
-    }
+    #}
     
     ############ Now run EcoCast for get_date
     source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/5_plot_EcoCast.R",chdir = TRUE)
     Run_ecocast(preddate=get_date,moddir=moddir,outdir = outdir,ecocastdir = ecocastdir,sensitivitydir=sensitivitydir,namesrisk=namesrisk,ecocastrisk=ecocastrisk,final_path_list=return_list)
     }
-  }
 }
-
+}
 

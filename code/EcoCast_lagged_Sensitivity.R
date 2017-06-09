@@ -91,7 +91,7 @@ EcoCast_lagged=function(date_range,ecocastrisk,path,moddir,envdir,outdir,sensiti
     
     master_list=lagged(variable=variable,SEQNCE = SEQNCE,get_date = get_date)
     
-    for(i in 1:7){
+    for(i in 1:6){
       return_list=master_list[[i]][[1]]
       print(return_list)
     
