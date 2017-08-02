@@ -5,6 +5,7 @@ library(raster)
 library(ggplot2)
 library(reshape)
 library(gridExtra)
+library(grid)
 
 ####### general objects
 Lagged_dir="/Volumes/SeaGate/ERD_DOM/EcoCast_CodeArchive_Sensitivity/EcoCastRuns/output/mean/Lagged" 
@@ -124,19 +125,19 @@ means01=as.data.frame(lapply(means01,FUN=range01))
 means01$t.minus=means$t.minus
 
 ###plotting
-s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=1.3)
-a=s.mean+labs(x="Number of days lagged")+labs(y="Mean difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))
+s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+a=s.mean+labs(x="Number of days lagged")+labs(y="Mean difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-s.SD=ggplot(means, aes(t.minus, s.SD)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=1.3)
-b=s.SD+labs(x="Number of days lagged")+labs(y="SD of difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))
+s.SD=ggplot(means, aes(t.minus, s.SD)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+b=s.SD+labs(x="Number of days lagged")+labs(y="SD of difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-p.GT.5=ggplot(means, aes(t.minus, p.GT.5)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=1.3)
-c=p.GT.5+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))
+p.GT.5=ggplot(means, aes(t.minus, p.GT.5)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+c=p.GT.5+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-p.GT.1=ggplot(means, aes(t.minus, p.GT.1)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=1.3)
-d=p.GT.1+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))
+p.GT.1=ggplot(means, aes(t.minus, p.GT.1)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+d=p.GT.1+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO_analysis.png",width=1100,height=1100,units='px',pointsize=35)
-grid.arrange(a,b,c,d,top="Lagged official output analysis")
+grid.arrange(a,b,c,d,top=textGrob("Lagged official output analysis",gp=gpar(fontsize=20)))
 dev.off()
 
