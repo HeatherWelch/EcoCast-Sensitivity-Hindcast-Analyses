@@ -1,3 +1,5 @@
+################ LAGGED OFFICIAL OUTPUT SENSITIVITY ################
+
 ### code to quantify ecocast sensitivity to missing data
 ## # pixels in SA = 12936 ncell(studyarea)
 
