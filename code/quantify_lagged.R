@@ -37,7 +37,7 @@ empty=data.frame(month=NA,day=NA,year=NA,missing_var=NA,s.mean=NA,s.SD=NA,p.GT.5
 
 var_names=unlist(list("SST","CHLA","EKE","YWIND","SLA"))
 lags=c(1,7,14,21,28,30)
-for(i in 1:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) #153:length(b), 172:length(b)
+for(i in 172:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) #153:length(b), 172:length(b)
   print(b[i])
   OO=clip_stack[[i]]
   for(iii in 1:length(lags)){
@@ -60,7 +60,7 @@ for(i in 1:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) #1
     empty[30*i+(ii*6)+iii,1]=substring(names(clip_stack[[i]]), first=7, last = 8)
     empty[30*i+(ii*6)+iii,2]=substring(names(clip_stack[[i]]), first=10, last = 11)
     empty[30*i+(ii*6)+iii,3]=substring(names(clip_stack[[i]]), first=2, last = 5)
-    empty[30*i+(ii*65)+iii,4]=var_names[ii]
+    empty[30*i+(ii*6)+iii,4]=var_names[ii]
     empty[30*i+(ii*6)+iii,5]=r
     empty[30*i+(ii*6)+iii,6]=s
     empty[30*i+(ii*6)+iii,7]=t
@@ -77,23 +77,41 @@ write.csv(DF_complete,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindca
 
 ####### make some plots, averaged across month
 DF_complete=DF_complete[,c(4:10)]
-a=melt(DF_complete,id=c("missing_var","lag"))
-means=cast(a,missing_var~lag,mean,subset=variable=="s.mean")
-means=cast(a,missing_var~lag,mean,subset=variable=="s.SD")
-# means2=dcast(a,missing_var~lag,value.var = "p.GT.1")
-# means2=reshape(DF_complete,direction = "wide",idvar="lag",timevar="missing_var")
-means_s.mean=a[a$variable=="s.mean",]
-means2=reshape(DF_complete,direction = "wide",idvar="lag",timevar="missing_var")
-means=cast(means_s.mean,missing_var~variable,mean)
-
 ##make %
-means$p.GT.1=means$p.GT.1*100
-means$p.GT.25=means$p.GT.25*100
-means$p.GT.5=means$p.GT.5*100
+DF_complete$p.GT.1=DF_complete$p.GT.1*100
+DF_complete$p.GT.25=DF_complete$p.GT.25*100
+DF_complete$p.GT.5=DF_complete$p.GT.5*100
 
-## normalizing between 1:0
-# range01 <- function(x){(x-min(x))/(max(x)-min(x))} 
-# means01=means
-# means01=as.data.frame(lapply(means01,FUN=range01))
-# means01$t.minus=means$t.minus
+a=melt(DF_complete,id=c("missing_var","lag"))
+
+means=cast(a,lag~missing_var,mean,subset=variable=="s.mean")
+means_s.mean=melt(means,id=c("missing_var","lag"))
+means=cast(a,missing_var~lag,mean,subset=variable=="s.SD")
+means_s.SD=melt(means,id=c("missing_var","lag"))
+means=cast(a,missing_var~lag,mean,subset=variable=="p.GT.5")
+means_p.GT.5=melt(means,id=c("missing_var","lag"))
+means=cast(a,missing_var~lag,mean,subset=variable=="p.GT.1")
+means_p.GT.1=melt(means,id=c("missing_var","lag"))
+
+
+###plotting
+s.mean=ggplot(means_s.mean, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+a=s.mean+labs(x="Number of days lagged")+labs(y="Mean difference from zero lag")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+
+s.SD=ggplot(means_s.SD, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+b=s.SD+labs(x="Number of days lagged")+labs(y="SD of difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+
+
+p.GT.5=ggplot(means_p.GT.5, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+c=p.GT.5+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+
+
+p.GT.1=ggplot(means_p.GT.1, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+d=p.GT.1+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+
+
+png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_analysis.png",width=1100,height=1100,units='px',pointsize=35)
+grid.arrange(a,b,c,d,top=textGrob("Lagged variable sensitivity analysis",gp=gpar(fontsize=20)))
+dev.off()
+
 
