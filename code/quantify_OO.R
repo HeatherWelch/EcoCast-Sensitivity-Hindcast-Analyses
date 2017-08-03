@@ -99,15 +99,15 @@ DF=quantify_OO(dir=OO_dir,studyarea=studyarea)
 write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
 
 ####### make some plots, segraged by month
-plot(DF$t.minus,DF$s.mean,cols=DF$month)
-qplot(t.minus, s.mean, colour = month,
-      data = DF)
-
-ggplot(DF, aes(t.minus, s.mean,colour = month)) + geom_point() + geom_smooth(method = "lm")
-ggplot(DF, aes(t.minus, s.SD,colour = month)) + geom_point() + geom_smooth(method = "lm")
-ggplot(DF, aes(t.minus, p.GT.5,colour = month)) + geom_point() + geom_smooth(method = "lm")
-ggplot(DF, aes(t.minus, p.GT.25,colour = month)) + geom_point() + geom_smooth(method = "lm")
-ggplot(DF, aes(t.minus, p.GT.1,colour = month)) + geom_point() + geom_smooth(method = "lm")
+# plot(DF$t.minus,DF$s.mean,cols=DF$month)
+# qplot(t.minus, s.mean, colour = month,
+#       data = DF)
+# 
+# ggplot(DF, aes(t.minus, s.mean,colour = month)) + geom_point() + geom_smooth(method = "lm")
+# ggplot(DF, aes(t.minus, s.SD,colour = month)) + geom_point() + geom_smooth(method = "lm")
+# ggplot(DF, aes(t.minus, p.GT.5,colour = month)) + geom_point() + geom_smooth(method = "lm")
+# ggplot(DF, aes(t.minus, p.GT.25,colour = month)) + geom_point() + geom_smooth(method = "lm")
+# ggplot(DF, aes(t.minus, p.GT.1,colour = month)) + geom_point() + geom_smooth(method = "lm")
 
 ####### make some plots, averaged across month
 DF_complete=DF[complete.cases(DF),]
