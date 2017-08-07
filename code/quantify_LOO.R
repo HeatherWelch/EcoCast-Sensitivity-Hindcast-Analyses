@@ -106,3 +106,70 @@ grid.arrange(a,b,c,d,top=textGrob("Leave one out analysis",gp=gpar(fontsize=20))
 dev.off()
 
 
+####################################################################################################################################
+###################### correlation
+empty=data.frame(month=NA,day=NA,year=NA,missing_var=NA,corellation=NA,pvalue=NA,p.GT.9.cor=NA,p.GT.05.pval=NA)
+var_names=list("SST","SST_both","SST_SD","CHLA","EKE","ywind","SLA","SLA_both","SLA_SD")
+pos_list=unlist(list(seq(1:150),(153:length(b))))
+for(i in pos_list){ #152 (missing 12/29, 12/30)
+  print(i)
+  print(b[i])
+  OO=clip_stack[[i]]
+  SST=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SST.grd")
+  SST_both=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SST_both.grd")
+  SST_SD=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SST_SD.grd")
+  CHLA=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_CHLA.grd")
+  EKE=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_EKE.grd")
+  SLA=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SLA.grd")
+  SLA_both=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SLA_both.grd")
+  SLA_SD=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SLA_SD.grd")
+  ywind=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_ywind.grd")
+  vars=unlist(list(SST,SST_both,SST_SD,CHLA,EKE,ywind,SLA,SLA_both,SLA_SD))
+  var_list=stack(vars)
+  for(ii in 1:length(vars)){
+    print(vars[ii])
+    r=corLocal(OO,var_list[[ii]],test=T)
+    r=r*studyarea
+    cor_values=getValues(r[[1]])
+    pval_values=getValues(r[[2]])
+    cor=cellStats(r[[1]],mean)
+    pval=cellStats(r[[2]],mean) # spatial standard deviation
+    empty[9*i+ii,1]=substring(names(clip_stack[[i]]), first=7, last = 8)
+    empty[9*i+ii,2]=substring(names(clip_stack[[i]]), first=10, last = 11)
+    empty[9*i+ii,3]=substring(names(clip_stack[[i]]), first=2, last = 5)
+    empty[9*i+ii,4]=var_names[ii]
+    empty[9*i+ii,5]=r
+    empty[9*i+ii,6]=cor
+    empty[9*i+ii,7]=pval
+    empty[9*i+ii,8]=length(cor_values[cor_values>.9])/12936*100
+    empty[9*i+ii,9]=length(pval_values[pval_values<.05])/12936*100
+  }
+}
+
+######## write out csv
+DF_complete=empty[complete.cases(empty),]
+write.csv(DF_complete,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO_cor.csv")
+
+####### make some plots, averaged across month
+DF_complete=DF_complete[,c(4:8)]
+a=melt(DF_complete,id="missing_var")
+means=cast(a,missing_var~variable,mean)
+means=means[c(2,9,1,6,8,7,3,5,4),]
+
+###plotting
+s.mean=ggplot(means, aes(missing_var, s.mean)) + geom_col()
+a=s.mean+labs(x="Missing variable")+labs(y="Mean per pixel correlation with zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+
+s.SD=ggplot(means, aes(missing_var, s.SD)) + geom_col()
+b=s.SD+labs(x="Missing variable")+labs(y="Mean per pixel correlation p-value with zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+
+p.GT.5=ggplot(means, aes(missing_var, p.GT.5)) + geom_col()
+c=p.GT.5+labs(x="Missing variable")+labs(y="% of pixels with > .9 correlation with zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+
+p.GT.1=ggplot(means, aes(missing_var, p.GT.1)) + geom_col()
+d=p.GT.1+labs(x="Missing variable")+labs(y="% of pixels with < .05 correlation p-value with zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+
+png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO_analysis_cor.png",width=1100,height=1100,units='px',pointsize=35)
+grid.arrange(a,b,c,d,top=textGrob("Leave one out analysis",gp=gpar(fontsize=20)))
+dev.off()
+
