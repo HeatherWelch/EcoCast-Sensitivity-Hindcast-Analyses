@@ -116,3 +116,41 @@ grid.arrange(a,b,c,d,top=textGrob("Lagged variable sensitivity analysis",gp=gpar
 dev.off()
 
 
+###################### correlation
+empty=data.frame(month=NA,day=NA,year=NA,missing_var=NA,corellation=NA,pvalue=NA,p.GT.9.cor=NA,p.GT.05.pval=NA,lag=NA)
+
+for(i in pos_list){ ##missing 152, and start of 2015 (missing 12/29, 12/30) #153:length(b), 172:length(b)
+  print(b[i])
+  OO=clip_stack[[i]]
+  for(iii in 1:length(lags)){
+    print(paste0("lag is ",lags[iii]))
+    SST=paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SST_",lags[iii],".grd")
+    CHLA=paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_CHLA_",lags[iii],".grd")
+    EKE=paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_EKE_",lags[iii],".grd")
+    SLA=paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SLA_",lags[iii],".grd")
+    YWIND=paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_YWIND_",lags[iii],".grd")
+    vars=unlist(list(SST,CHLA,EKE,YWIND,SLA))
+    var_list=stack(vars)
+    var_list=var_list*studyarea
+    for(ii in 1:length(vars)){
+      print(vars[ii])
+      r=corLocal(OO,var_list[[ii]],test=T)
+      r=r*studyarea
+      cor_values=getValues(r[[1]])
+      pval_values=getValues(r[[2]])
+      cor=cellStats(r[[1]],mean)
+      pval=cellStats(r[[2]],mean) # spatial standard deviation
+      empty[30*i+(ii*6)+iii,1]=substring(names(clip_stack[[i]]), first=7, last = 8)
+      empty[30*i+(ii*6)+iii,2]=substring(names(clip_stack[[i]]), first=10, last = 11)
+      empty[30*i+(ii*6)+iii,3]=substring(names(clip_stack[[i]]), first=2, last = 5)
+      empty[30*i+(ii*6)+iii,4]=var_names[ii]
+      empty[30*i+(ii*6)+iii,5]=cor
+      empty[30*i+(ii*6)+iii,6]=pval
+      empty[30*i+(ii*6)+iii,7]=length(cor_values[cor_values>.9])/12936*100
+      empty[30*i+(ii*6)+iii,8]=length(pval_values[pval_values<.05])/12936*100
+      empty[30*i+(ii*6)+iii,9]=lags[iii]
+    }
+  }
+}
+
+DF_complete=empty[complete.cases(empty),]
