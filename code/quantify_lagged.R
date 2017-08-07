@@ -37,7 +37,8 @@ empty=data.frame(month=NA,day=NA,year=NA,missing_var=NA,s.mean=NA,s.SD=NA,p.GT.5
 
 var_names=unlist(list("SST","CHLA","EKE","YWIND","SLA"))
 lags=c(1,7,14,21,28,30)
-for(i in 172:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) #153:length(b), 172:length(b)
+pos_list=unlist(list(seq(1:150),(153:length(b))))
+for(i in pos_list){ ##missing 152, and start of 2015 (missing 12/29, 12/30) #153:length(b), 172:length(b)
   print(b[i])
   OO=clip_stack[[i]]
   for(iii in 1:length(lags)){
@@ -52,8 +53,8 @@ for(i in 172:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) 
   for(ii in 1:length(vars)){
     print(vars[ii])
     q=abs(OO-var_list[[ii]])
-    r=cellStats(q,sum) # spatial sum
-    s=cellStats(q,sd) # spatial standard deviation
+    r=cellStats(q,sum)/12936 # spatial sum
+    s=cellStats(q,sd)/12936 # spatial standard deviation
     t=cellStats(q>.5,sum)/12936 # % cells where difference > .5
     u=cellStats(q>.25,sum)/12936 # % cells where difference > .25
     v=cellStats(q>.1,sum)/12936 # % cells where difference > .1
@@ -73,7 +74,7 @@ for(i in 172:length(b)){ #missing 152, and start of 2015 (missing 12/29, 12/30) 
 
 ######## write out csv
 DF_complete=empty[complete.cases(empty),]
-write.csv(DF_complete,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged.csv")
+#write.csv(DF_complete,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged.csv")
 
 ####### make some plots, averaged across month
 DF_complete=DF_complete[,c(4:10)]
@@ -95,18 +96,18 @@ means_p.GT.1=melt(means,id=c("missing_var","lag"))
 
 
 ###plotting
-s.mean=ggplot(means_s.mean, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
-a=s.mean+labs(x="Number of days lagged")+labs(y="Mean difference from zero lag")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+s.mean=ggplot(means_s.mean, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables") + expand_limits(y=0)
+a=s.mean+labs(x="Number of days lagged")+labs(y="Mean per pixel difference from zero lag")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
 
-s.SD=ggplot(means_s.SD, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
-b=s.SD+labs(x="Number of days lagged")+labs(y="SD of difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
+s.SD=ggplot(means_s.SD, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")+ expand_limits(y=0)
+b=s.SD+labs(x="Number of days lagged")+labs(y="Standard deviation of per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
 
 
-p.GT.5=ggplot(means_p.GT.5, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+p.GT.5=ggplot(means_p.GT.5, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")+ expand_limits(y=0)
 c=p.GT.5+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
 
 
-p.GT.1=ggplot(means_p.GT.1, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")
+p.GT.1=ggplot(means_p.GT.1, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show_guide=F,hjust=2)+labs(color = "Missing variables")+ expand_limits(y=0)
 d=p.GT.1+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
 
 

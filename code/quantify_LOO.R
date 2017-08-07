@@ -31,7 +31,9 @@ empty=data.frame(month=NA,day=NA,year=NA,missing_var=NA,s.mean=NA,s.SD=NA,p.GT.5
 
 ######## run quantification
 var_names=list("SST","SST_both","SST_SD","CHLA","EKE","ywind","SLA","SLA_both","SLA_SD")
-for(i in 153:length(b)){ #152 (missing 12/29, 12/30)
+pos_list=unlist(list(seq(1:150),(153:length(b))))
+for(i in pos_list){ #152 (missing 12/29, 12/30)
+  print(i)
   print(b[i])
   OO=clip_stack[[i]]
   SST=paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",b[i],"_SST.grd")
@@ -48,8 +50,8 @@ for(i in 153:length(b)){ #152 (missing 12/29, 12/30)
   for(ii in 1:length(vars)){
     print(vars[ii])
     q=abs(OO-var_list[[ii]])
-    r=cellStats(q,sum) # spatial sum
-    s=cellStats(q,sd) # spatial standard deviation
+    r=cellStats(q,sum)/12936 # spatial sum
+    s=cellStats(q,sd)/12936 # spatial standard deviation
     t=cellStats(q>.5,sum)/12936 # % cells where difference > .5
     u=cellStats(q>.25,sum)/12936 # % cells where difference > .25
     v=cellStats(q>.1,sum)/12936 # % cells where difference > .1
@@ -66,10 +68,10 @@ for(i in 153:length(b)){ #152 (missing 12/29, 12/30)
 }
 
 ######## write out csv
-write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO.csv")
+DF_complete=empty[complete.cases(empty),]
+#write.csv(DF_complete,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO.csv")
 
 ####### make some plots, averaged across month
-DF_complete=empty[complete.cases(empty),]
 DF_complete=DF_complete[,c(4:9)]
 a=melt(DF_complete,id="missing_var")
 means=cast(a,missing_var~variable,mean)
@@ -87,16 +89,16 @@ means01=as.data.frame(lapply(means01,FUN=range01))
 means01$t.minus=means$t.minus
 
 ###plotting
-s.mean=ggplot(means, aes(missing_var, s.mean)) + geom_col() 
-a=s.mean+labs(x="Missing variable")+labs(y="Mean difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+s.mean=ggplot(means, aes(missing_var, s.mean)) + geom_col() + expand_limits(y=0)
+a=s.mean+labs(x="Missing variable")+labs(y="Mean per pixel difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
 
-s.SD=ggplot(means, aes(missing_var, s.SD)) + geom_col() 
-b=s.SD+labs(x="Missing variable")+labs(y="SD of difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
+s.SD=ggplot(means, aes(missing_var, s.SD)) + geom_col() + expand_limits(y=0)
+b=s.SD+labs(x="Missing variable")+labs(y="Standard deviation of per pixel difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
 
-p.GT.5=ggplot(means, aes(missing_var, p.GT.5)) + geom_col() 
+p.GT.5=ggplot(means, aes(missing_var, p.GT.5)) + geom_col() + expand_limits(y=0)
 c=p.GT.5+labs(x="Missing variable")+labs(y="% of pixels with > .5 difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
 
-p.GT.1=ggplot(means, aes(missing_var, p.GT.1)) + geom_col() 
+p.GT.1=ggplot(means, aes(missing_var, p.GT.1)) + geom_col() + expand_limits(y=0)
 d=p.GT.1+labs(x="Missing variable")+labs(y="% of pixels with > .1 difference from no missing variables")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=13))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO_analysis.png",width=1100,height=1100,units='px',pointsize=35)

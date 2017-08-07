@@ -44,7 +44,7 @@ sensitivitydir="lagged"
 #var_list=list("CHLA")
 #var_list=list("EKE","YWIND","SLA")
 #var_list=list("EKE")
-var_list=list("SLA")
+var_list=list("YWIND")
 
 source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/EcoCast_lagged_Sensitivity.R",chdir = TRUE)
 

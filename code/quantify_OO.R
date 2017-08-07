@@ -45,8 +45,8 @@ quantify_OO=function(dir=OO_dir,studyarea){
       n=date_list[ii]
       if(i+n<nlayers(clip_2012)){
       a=abs(clip_2012[[i]]-clip_2012[[i+n]])
-      b=cellStats(a,sum) # spatial sum
-      c=cellStats(a,sd) # spatial standard deviation
+      b=cellStats(a,sum)/12936 # spatial sum
+      c=cellStats(a,sd)/12936 # spatial standard deviation
       d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
       e=cellStats(a>.25,sum)/12936 # % cells where difference > .25
       f=cellStats(a>.1,sum)/12936 # % cells where difference > .1
@@ -71,8 +71,8 @@ quantify_OO=function(dir=OO_dir,studyarea){
       n=date_list[ii]
       if(i+n<nlayers(clip_2015)){
         a=abs(clip_2015[[i]]-clip_2015[[i+n]])
-        b=cellStats(a,sum) # spatial sum
-        c=cellStats(a,sd) # spatial standard deviation
+        b=cellStats(a,sum)/12936 # spatial sum
+        c=cellStats(a,sd)/12936 # spatial standard deviation
         d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
         e=cellStats(a>.25,sum)/12936 # % cells where difference > .25
         f=cellStats(a>.1,sum)/12936 # % cells where difference > .1
@@ -96,7 +96,7 @@ quantify_OO=function(dir=OO_dir,studyarea){
 
 ###### run function
 DF=quantify_OO(dir=OO_dir,studyarea=studyarea)
-write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
+#write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
 
 ####### make some plots, segraged by month
 # plot(DF$t.minus,DF$s.mean,cols=DF$month)
@@ -127,16 +127,16 @@ means01=as.data.frame(lapply(means01,FUN=range01))
 means01$t.minus=means$t.minus
 
 ###plotting
-s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
-a=s.mean+labs(x="Number of days lagged")+labs(y="Mean difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
+s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
+a=s.mean+labs(x="Number of days lagged")+labs(y="Mean per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-s.SD=ggplot(means, aes(t.minus, s.SD)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
-b=s.SD+labs(x="Number of days lagged")+labs(y="SD of difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
+s.SD=ggplot(means, aes(t.minus, s.SD)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
+b=s.SD+labs(x="Number of days lagged")+labs(y="Standard deviation of per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-p.GT.5=ggplot(means, aes(t.minus, p.GT.5)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+p.GT.5=ggplot(means, aes(t.minus, p.GT.5)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
 c=p.GT.5+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
-p.GT.1=ggplot(means, aes(t.minus, p.GT.1)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)
+p.GT.1=ggplot(means, aes(t.minus, p.GT.1)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
 d=p.GT.1+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO_analysis.png",width=1100,height=1100,units='px',pointsize=35)
