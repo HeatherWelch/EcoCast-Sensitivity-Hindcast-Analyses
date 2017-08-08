@@ -23,6 +23,8 @@ d=grep("_2015-",ecocast,value = T)
 e=unlist(list(c,d))
 ecostack=stack(e)
 clip_stack=ecostack*studyarea
+sd=calc(clip_stack, sd)
+sd_per_pixel=cellStats(sd,mean)
 means=calc(clip_stack, mean)
 r=cellStats(means,mean) # spatial sum r=0.4433651
 s=cellStats(means,sd) # spatial standard deviation s=0.2055143
@@ -119,6 +121,6 @@ for(i in 1:length(var_names)){
 }
 
 
-###### new plan, correlations
+###### new plan, correlations (abandon, can be correlated while still having a large difference)
 
 

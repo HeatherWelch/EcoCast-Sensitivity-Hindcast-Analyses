@@ -97,10 +97,11 @@ quantify_OO=function(dir=OO_dir,studyarea){
 ###### run function
 DF=quantify_OO(dir=OO_dir,studyarea=studyarea)
 #write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
+DF=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
 
 ####### make some plots, averaged across month
 DF_complete=DF[complete.cases(DF),]
-DF_complete=DF_complete[,c(4:9)]
+DF_complete=DF_complete[,c(4:10)]
 a=melt(DF_complete,id="t.minus")
 means=cast(a,t.minus~variable,mean)
 
@@ -109,11 +110,15 @@ means$p.GT.1=means$p.GT.1*100
 means$p.GT.25=means$p.GT.25*100
 means$p.GT.5=means$p.GT.5*100
 
-#normalizing between 1:0
-range01 <- function(x){(x-min(x))/(max(x)-min(x))} 
-means01=means
-means01=as.data.frame(lapply(means01,FUN=range01))
-means01$t.minus=means$t.minus
+# #normalizing between 1:0
+# range01 <- function(x){(x-min(x))/(max(x)-min(x))} 
+# means01=means
+# means01=as.data.frame(lapply(means01,FUN=range01))
+# means01$t.minus=means$t.minus
+
+##### adding SD cuttoff (SD is the spatial standard deviation across the entire official stack)
+# spatial standard deviation s=0.2055143
+cutoff <- data.frame( x = c(-Inf, Inf), y =0.2055143, cutoff = factor(0.2055143) )
 
 ###plotting
 s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
@@ -134,8 +139,8 @@ dev.off()
 
 
 
-##########################################################################################################################################################
-###################### correlation
+########################################################################################################################################################## (abandon, can be correlated while still having a large difference)
+###################### correlation (abandon, can be correlated while still having a large difference)
 quantify_OO_lagged=function(dir=OO_dir,studyarea){
   setwd(dir)
   
