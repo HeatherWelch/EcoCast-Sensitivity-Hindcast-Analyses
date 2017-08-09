@@ -5,6 +5,7 @@
 library(ggplot2)
 library(gridExtra)
 library(grid)
+library(reshape)
 
 #### read in all the data frames
 OO=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
@@ -101,47 +102,48 @@ png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensiti
 grid.arrange(final,final_lines,ncol=2,top=textGrob("% of pixels with > .1 difference from official output, all analyses",gp=gpar(fontsize=20)))
 dev.off()
 
+########### --------------------> % of pixels with > .5 difference from no missing variables
+LOO_means=LOO_means[order(LOO_means[,4]),]
+LOO_means$psuedo_lag=seq(3,27,by=3)
+master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.5)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.5,label=missing_var),vjust=-1,size=2.2)+
+  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.5),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.5),color="black")+ expand_limits(y=0) + #+geom_text(data=OO_means,aes(x=t.minus, y=s.mean,label=t.minus),hjust=2)
+  geom_line(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var)) #+geom_text(data=lagged_means_s.mean,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=0)
+final=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels with > .5 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())
+
+master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.5)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.5,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,4))+
+  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.5),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.5),color="black")+ expand_limits(y=c(0,4)) + geom_text(data=OO_means,aes(x=t.minus, y=p.GT.5,label=t.minus),hjust=2)+
+  geom_line(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_p.GT.5,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,4))
+final_lines=master+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,4)) 
+
+png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/p.GT.5.png",width=1100,height=600,units='px',pointsize=100)
+grid.arrange(final,final_lines,ncol=2,top=textGrob("% of pixels with > .5 difference from official output, all analyses",gp=gpar(fontsize=20)))
+dev.off()
+
+
+#### combining to assess rank order
+OO_means$analysis="OO"
+OO_means$sensitivity=OO_means$t.minus
+OO_means=OO_means[,2:ncol(OO_means)]
+OO_means=OO_means[,c(1,2,3,5,6,7)]
+LOO_means$analysis="LOO"
+LOO_means$sensitivity=LOO_means$missing_var
+LOO_means=LOO_means[,c(2:6,8,9)]
+LOO_means=LOO_means[,c(1,2,3,5,6,7)]
+lagged_means_s.mean$metric="s.mean"
+lagged_means_s.SD$metric="s.SD"
+lagged_means_p.GT.5$metric="p.GT.5"
+lagged_means_p.GT.1$metric="p.GT.1"
+lagged_all=rbind(lagged_means_s.mean,lagged_means_s.SD,lagged_means_p.GT.5,lagged_means_p.GT.1)
+lagged_all$var_lag=paste0(lagged_all$missing_var,"_",lagged_all$lag)
+lagged_all$analysis="lagged"
+lagged_pivot=cast(lagged_all,var_lag~metric)
+lagged_pivot$analysis="lagged"
+lagged_pivot$sensitivity=lagged_pivot$var_lag
+lagged_pivot=lagged_pivot[,c(4,5,3,2,6,7)]
+all=rbind(OO_means,LOO_means,lagged_pivot)
+all$lable=paste0(all$analysis,"_",all$sensitivity)
+
+write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/summary.csv")
 
 
 
-
-
-
-
-
-
-###combining first
-OO_plot=ggplot(OO_means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
-a1=OO_plot+labs(x="Number of days lagged (lines only)")+labs(y="Mean per pixel difference from zero lag")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
-lagged_plot=ggplot(lagged_means_s.mean, aes(lag, value,color=missing_var))+ geom_line() + geom_point()+geom_text(aes(label=lag),show.legend = F,hjust=2)+labs(color = "Missing variables") + expand_limits(y=0)
-b1=lagged_plot+labs(x="Number of days lagged (lines only)")+labs(y="Mean per pixel difference from zero lag")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.key = element_blank())
-
-grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
-  
-  plots <- list(...)
-  position <- match.arg(position)
-  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
-  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-  lheight <- sum(legend$height)
-  lwidth <- sum(legend$width)
-  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
-  gl <- c(gl, ncol = ncol, nrow = nrow)
-  
-  combined <- switch(position,
-                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
-                                            legend,
-                                            ncol = 1,
-                                            heights = unit.c(unit(1, "npc") - lheight, lheight)),
-                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
-                                           legend,
-                                           ncol = 2,
-                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
-  
-  grid.newpage()
-  grid.draw(combined)
-  
-  # return gtable invisibly
-  invisible(combined)
-  
-}
-grid_arrange_shared_legend(a1,b1,nrow=1,ncol=2,position="right")

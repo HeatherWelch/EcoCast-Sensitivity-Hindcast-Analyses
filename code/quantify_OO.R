@@ -118,7 +118,7 @@ means$p.GT.5=means$p.GT.5*100
 
 ##### adding SD cuttoff (SD is the spatial standard deviation across the entire official stack)
 # spatial standard deviation s=0.2055143
-cutoff <- data.frame( x = c(-Inf, Inf), y =0.2055143, cutoff = factor(0.2055143) )
+# cutoff <- data.frame( x = c(-Inf, Inf), y =0.2055143, cutoff = factor(0.2055143) )
 
 ###plotting
 s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
