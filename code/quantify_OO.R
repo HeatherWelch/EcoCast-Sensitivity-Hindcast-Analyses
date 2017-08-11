@@ -43,8 +43,8 @@ quantify_OO=function(dir=OO_dir,studyarea){
     for(ii in 1:length(date_list)){
       print(ii)
       n=date_list[ii]
-      if(i+n<nlayers(clip_2012)){
-      a=abs(clip_2012[[i]]-clip_2012[[i+n]])
+      if(i-n>0){
+      a=abs(clip_2012[[i]]-clip_2012[[i-n]]) ####### __________________think about this plus minus stuff
       b=cellStats(a,sum)/12936 # spatial sum
       c=cellStats(a,sd)/12936 # spatial standard deviation
       d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
@@ -69,8 +69,8 @@ quantify_OO=function(dir=OO_dir,studyarea){
     for(ii in 1:length(date_list)){
       print(ii)
       n=date_list[ii]
-      if(i+n<nlayers(clip_2015)){
-        a=abs(clip_2015[[i]]-clip_2015[[i+n]])
+      if(i-n>0){
+        a=abs(clip_2015[[i]]-clip_2015[[i-n]])
         b=cellStats(a,sum)/12936 # spatial sum
         c=cellStats(a,sd)/12936 # spatial standard deviation
         d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
