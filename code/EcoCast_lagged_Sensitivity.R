@@ -1,4 +1,4 @@
-##### 1. function EcoCast_laged: function to allow us for each day in series, to drop out each variable over each day for a week (n=35 products)
+####### 1. function EcoCast_laged: function to allow us for each day in series, to drop out each variable over each day for a week (n=35 products)
 # date_range (list of dates with format = date; e.g. date_range=as.character(seq(from=as.Date("2017-03-14"),to=as.Date("2017-03-24"),by="day")))
 # ecocastrisk (character list of weightings in the order: Blue shark, Blue shark, Sea lions, Leatherbacks, Swordfish)
 # path (pathway to EcoCast_CodeArchive folder; e.g. path = "/Volumes/SeaGate/ERD_DOM/EcoCast_CodeArchive")

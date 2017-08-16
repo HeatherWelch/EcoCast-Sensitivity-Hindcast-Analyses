@@ -14,9 +14,9 @@ ecocastrisk<-c(-0.2,-0.2,-0.05,-0.9,0.9)
 namesrisk<-c("Blue shark bycatch","Blue shark tracking","Sea lions","Leatherbacks","Swordfish")
 
 # date_range=as.character(seq(from=as.Date("2015-08-01"),to=as.Date("2015-12-31"),by="day")) ## 2015, rerun for analysis 3
-date_range=as.character(seq(from=as.Date("2015-08-01"),to=as.Date("2015-08-19"),by="day"))
-date_range=date_range[!date_range %in% "2012-12-28"] #missing chla from this day
-#date_range=as.character(seq(from=as.Date("2012-08-01"),to=as.Date("2012-12-31"),by="day"))
+#date_range=as.character(seq(from=as.Date("2015-08-01"),to=as.Date("2015-08-19"),by="day"))
+#date_range=date_range[!date_range %in% "2012-12-28"] #missing chla from this day
+date_range=as.character(seq(from=as.Date("2012-12-01"),to=as.Date("2012-12-31"),by="day"))
 #date_range=as.character(seq(from=as.Date("2012-12-31"),to=as.Date("2012-12-31"),by="day")) ## restarting loo again
 #date_range=as.character(seq(from=as.Date("2012-12-29"),to=as.Date("2012-12-31"),by="day"))
 

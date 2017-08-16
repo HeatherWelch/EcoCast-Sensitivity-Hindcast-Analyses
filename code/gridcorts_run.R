@@ -1,4 +1,4 @@
-####### running grid courts to test time-series correlation
+####### running grid courts to test time-series correlation ###
 
 source("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/code/gridcorts.R")
 library(raster)

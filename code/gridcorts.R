@@ -1,4 +1,4 @@
-#############################################################################################
+############################################################################################# ## 
 # title         : Gridded Correlation of Time Series Raster Data (Gridcorts)
 # purpose       : Pixelwise time series correlation and significance based on Pearson's r, 
 #               : Spearman's rho or Kendall's tau
