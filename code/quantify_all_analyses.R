@@ -11,9 +11,9 @@ library(reshape)
 OO=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
 LOO=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/LOO.csv")
 lagged=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged.csv")
-lagged_raw=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_envt_vars.csv")
-lagged_lbst=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_lbst.csv")
-lagged_raw_UnS=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_envt_vars_unstandardized.csv")
+# lagged_raw=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_envt_vars.csv")
+# lagged_lbst=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_lbst.csv")
+# lagged_raw_UnS=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/lagged_envt_vars_unstandardized.csv")
 
 ### process out
 ################ LAGGED OFFICIAL OUTPUT SENSITIVITY ################
@@ -55,6 +55,8 @@ means=cast(a,missing_var~lag,mean,subset=variable=="p.GT.5")
 lagged_means_p.GT.5=melt(means,id=c("missing_var","lag"))
 means=cast(a,missing_var~lag,mean,subset=variable=="p.GT.1")
 lagged_means_p.GT.1=melt(means,id=c("missing_var","lag"))
+means=cast(a,missing_var~lag,mean,subset=variable=="p.GT.25")
+lagged_means_p.GT.25=melt(means,id=c("missing_var","lag"))
 
 # ################ LAGGED RAW VARIABLE SENSITIVITY, standardized ################
 # lagged_raw=lagged_raw[,c(5:11)]
@@ -119,7 +121,7 @@ final=master+labs(x="Number of days lagged (lines only)")+labs(y="Mean per pixel
 master=ggplot()+ geom_col(data=LOO_means, aes(psuedo_lag,s.mean)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=s.mean,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,.08)) + 
 geom_line(data=OO_means,aes(x=t.minus, y=s.mean),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=s.mean),color="black")+ expand_limits(y=0) + geom_text(data=OO_means,aes(x=t.minus, y=s.mean,label=t.minus),hjust=2)+
 geom_line(data=lagged_means_s.mean,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_s.mean,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_s.mean,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,.08))
-final_lines=master+labs(x="Number of days lagged")+labs(y="Mean per pixel difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,.08))
+final_lines=master+labs(x="Number of days lagged (lines only)")+labs(y="Mean per pixel difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,.08))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/s.means.png",width=1100,height=600,units='px',pointsize=100)
 grid.arrange(final,final_lines,ncol=2,top=textGrob("Mean per pixel difference from official output, all analyses",gp=gpar(fontsize=20)))
@@ -136,7 +138,7 @@ final=master+labs(x="Number of days lagged (lines only)")+labs(y="Standard devia
 master=ggplot()+ geom_col(data=LOO_means, aes(psuedo_lag,s.SD)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=s.SD,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,1.05e-05)) + 
   geom_line(data=OO_means,aes(x=t.minus, y=s.SD),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=s.SD),color="black")+ expand_limits(y=0) + geom_text(data=OO_means,aes(x=t.minus, y=s.SD,label=t.minus),hjust=2)+
   geom_line(data=lagged_means_s.SD,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_s.SD,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_s.SD,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,1.05e-05))
-final_lines=master+labs(x="Number of days lagged")+labs(y="Standard deviation of per pixel difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,1.05e-05))
+final_lines=master+labs(x="Number of days lagged (lines only)")+labs(y="Standard deviation of per pixel difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,1.05e-05))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/s.SD.png",width=1100,height=600,units='px',pointsize=100)
 grid.arrange(final,final_lines,ncol=2,top=textGrob("Standard deviation of per pixel difference from official output, all analyses",gp=gpar(fontsize=20)))
@@ -153,27 +155,27 @@ final=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels wi
 master=ggplot()+ geom_col(data=LOO_means, aes(psuedo_lag,p.GT.1)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.1,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,30)) + 
   geom_line(data=OO_means,aes(x=t.minus, y=p.GT.1),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.1),color="black")+ expand_limits(y=0) + geom_text(data=OO_means,aes(x=t.minus, y=p.GT.1,label=t.minus),hjust=2)+
   geom_line(data=lagged_means_p.GT.1,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.1,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_p.GT.1,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,30))
-final_lines=master+labs(x="Number of days lagged")+labs(y="% of pixels with > .1 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,30))
+final_lines=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels with > .1 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,30))
 
 png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/p.GT.1.png",width=1100,height=600,units='px',pointsize=100)
 grid.arrange(final,final_lines,ncol=2,top=textGrob("% of pixels with > .1 difference from official output, all analyses",gp=gpar(fontsize=20)))
 dev.off()
 
-########### --------------------> % of pixels with > .5 difference from no missing variables
-LOO_means=LOO_means[order(LOO_means[,4]),]
+########### --------------------> % of pixels with > .25 difference from no missing variables
+LOO_means=LOO_means[order(LOO_means[,5]),]
 LOO_means$psuedo_lag=seq(3,27,by=3)
-master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.5)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.5,label=missing_var),vjust=-1,size=2.2)+
-  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.5),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.5),color="black")+ expand_limits(y=0) + #+geom_text(data=OO_means,aes(x=t.minus, y=s.mean,label=t.minus),hjust=2)
-  geom_line(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var)) #+geom_text(data=lagged_means_s.mean,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=0)
-final=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels with > .5 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())
+master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.25)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.25,label=missing_var),vjust=-1,size=2.2)+
+  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.25),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.25),color="black")+ expand_limits(y=0) + #+geom_text(data=OO_means,aes(x=t.minus, y=s.mean,label=t.minus),hjust=2)
+  geom_line(data=lagged_means_p.GT.25,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.25,aes(lag, value,color=missing_var)) #+geom_text(data=lagged_means_s.mean,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=0)
+final=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels with > .25 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())
 
-master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.5)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.5,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,1.5))+
-  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.5),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.5),color="black")+ expand_limits(y=c(0,4)) + geom_text(data=OO_means,aes(x=t.minus, y=p.GT.5,label=t.minus),hjust=2)+
-  geom_line(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.5,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_p.GT.5,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,1.5))
-final_lines=master+labs(x="Number of days lagged")+labs(y="% of pixels with > .5 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,.5)) 
+master=ggplot() + geom_col(data=LOO_means, aes(psuedo_lag,p.GT.25)) + expand_limits(y=0)+geom_text(data=LOO_means,aes(x=psuedo_lag, y=p.GT.25,label=missing_var),vjust=-1,size=2.2)+ expand_limits(y=c(0,10))+
+  geom_line(data=OO_means,aes(x=t.minus, y=p.GT.25),color="blue")+ geom_point(data=OO_means,aes(x=t.minus, y=p.GT.25),color="black")+ expand_limits(y=c(0,4)) + geom_text(data=OO_means,aes(x=t.minus, y=p.GT.25,label=t.minus),hjust=2)+
+  geom_line(data=lagged_means_p.GT.25,aes(lag, value,color=missing_var))+ geom_point(data=lagged_means_p.GT.25,aes(lag, value,color=missing_var)) +geom_text(data=lagged_means_p.GT.25,aes(lag, value,label=lag),hjust=2)+ expand_limits(y=c(0,10))
+final_lines=master+labs(x="Number of days lagged (lines only)")+labs(y="% of pixels with > .25 difference from official output")+theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))+ theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,10)) 
 
-png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/p.GT.5.png",width=1100,height=600,units='px',pointsize=100)
-grid.arrange(final,final_lines,ncol=2,top=textGrob("% of pixels with > .5 difference from official output, all analyses",gp=gpar(fontsize=20)))
+png("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/p.GT.25.png",width=1100,height=600,units='px',pointsize=100)
+grid.arrange(final,final_lines,ncol=2,top=textGrob("% of pixels with > .25 difference from official output, all analyses",gp=gpar(fontsize=20)))
 dev.off()
 
 

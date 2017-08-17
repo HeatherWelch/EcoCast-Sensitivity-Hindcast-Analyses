@@ -46,7 +46,7 @@ quantify_OO=function(dir=OO_dir,studyarea){
       if(i-n>0){
       a=abs(clip_2012[[i]]-clip_2012[[i-n]]) ####### __________________think about this plus minus stuff
       b=cellStats(a,sum)/12936 # spatial sum
-      c=cellStats(a,sd)/12936 # spatial standard deviation
+      c=cellStats(a,stat='sd')/12936 # spatial standard deviation
       d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
       e=cellStats(a>.25,sum)/12936 # % cells where difference > .25
       f=cellStats(a>.1,sum)/12936 # % cells where difference > .1
@@ -72,7 +72,7 @@ quantify_OO=function(dir=OO_dir,studyarea){
       if(i-n>0){
         a=abs(clip_2015[[i]]-clip_2015[[i-n]])
         b=cellStats(a,sum)/12936 # spatial sum
-        c=cellStats(a,sd)/12936 # spatial standard deviation
+        c=cellStats(a,stat='sd')/12936 # spatial standard deviation
         d=cellStats(a>.5,sum)/12936 # % cells where difference > .5
         e=cellStats(a>.25,sum)/12936 # % cells where difference > .25
         f=cellStats(a>.1,sum)/12936 # % cells where difference > .1
@@ -97,18 +97,25 @@ quantify_OO=function(dir=OO_dir,studyarea){
 ###### run function
 DF=quantify_OO(dir=OO_dir,studyarea=studyarea)
 #write.csv(DF,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
-DF=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
+#DF=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/OO.csv")
 
 ####### make some plots, averaged across month
 DF_complete=DF[complete.cases(DF),]
 DF_complete=DF_complete[,c(4:10)]
 a=melt(DF_complete,id="t.minus")
 means=cast(a,t.minus~variable,mean)
+means=cast(a,t.minus~variable,c(mean,sd))
 
 ##make %
-means$p.GT.1=means$p.GT.1*100
-means$p.GT.25=means$p.GT.25*100
-means$p.GT.5=means$p.GT.5*100
+means$p.GT.1=means$p.GT.1_mean*100
+means$p.GT.25=means$p.GT.25_mean*100
+means$p.GT.5=means$p.GT.5_mean*100
+
+## thinking about error bars
+means$upper=means$s.mean_mean+means$s.mean_sd
+means$lower=means$s.mean_mean-means$s.mean_sd
+means$s.mean=means$s.mean_mean
+means$s.SD=means$s.SD_mean
 
 # #normalizing between 1:0
 # range01 <- function(x){(x-min(x))/(max(x)-min(x))} 
@@ -123,6 +130,10 @@ means$p.GT.5=means$p.GT.5*100
 ###plotting
 s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
 a=s.mean+labs(x="Number of days lagged")+labs(y="Mean per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
+
+# with shaded error
+# s.mean=ggplot(means, aes(t.minus, s.mean)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0) +geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.2)
+# a=s.mean+labs(x="Number of days lagged")+labs(y="Mean per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
 
 s.SD=ggplot(means, aes(t.minus, s.SD)) + geom_point() + geom_line(colour="blue")+geom_text(aes(label=t.minus),hjust=2)+ expand_limits(y=0)
 b=s.SD+labs(x="Number of days lagged")+labs(y="Standard deviation of per pixel difference from zero lag")+ theme(panel.background = element_blank())+ theme(axis.line = element_line(colour = "black"))+ theme(text = element_text(size=15))
