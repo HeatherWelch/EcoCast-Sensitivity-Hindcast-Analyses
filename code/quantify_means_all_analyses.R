@@ -115,7 +115,7 @@ lagged_var=empty_lagged_var[complete.cases(empty_lagged_var),]
 #lagged_var$a=substring(lagged_var$analysis, first=10, last = nchar(lagged_var$analysis))
 
 all=rbind(OO,OO_lagged,LOO,lagged_var)
-#write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
+write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
 #########
 all=read.csv("~/Desktop/EcoGit/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
 all=all[,2:4]
