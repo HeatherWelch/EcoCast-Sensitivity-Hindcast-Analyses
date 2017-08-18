@@ -115,37 +115,38 @@ lagged_var=empty_lagged_var[complete.cases(empty_lagged_var),]
 #lagged_var$a=substring(lagged_var$analysis, first=10, last = nchar(lagged_var$analysis))
 
 all=rbind(OO,OO_lagged,LOO,lagged_var)
-write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
+#write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
 #########
 all=read.csv("~/Desktop/EcoGit/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
-all=all[,2:4]
+all=all[,2:5]
 
 #all$replicate=as.factor(all$replicate)
 a=melt(all,id="analysis")
-means=cast(a,analysis~variable,c(mean,sd))
+means=cast(a,analysis~variable,mean)
 means=means[complete.cases(means),]
-means$analysis=gsub("_28","_30",means$analysis)  
-means$upper=means$mean_mean+means$mean_sd
-means$lower=means$mean_mean-means$mean_sd
+means$mean_mean=means$mean
+#means$analysis=gsub("_28","_30",means$analysis)  
+means$upper=means$mean_mean+means$sd
+means$lower=means$mean_mean-means$sd
 means$test=means$analysis
 b=cSplit(means, 'test', sep="_", drop=T,type.convert=FALSE)
 b=as.data.frame(b)
-b[36,10]=1
-b[37,10]=14
-b[38,10]=3
-b[39,10]=2
-b[40,10]=30
-b[41,10]=4
-b[42,10]=5
-b[43,10]=6
-b[44,10]=7
-b[45,10]=8
+b[41,10]=1
+b[42,10]=14
+b[43,10]=3
+b[44,10]=2
+b[45,10]=30
+b[46,10]=4
+b[47,10]=5
+b[48,10]=6
+b[49,10]=7
+b[50,10]=8
 
-means=b[,c(1,4,6,7,10)]
+means=b[,c(1,3,6,7,10)]
 means$lag=means$test_3
-means=means[,c(1:4,6)]
-OO=means[35,]
-OO_lagged=means[36:45,]
+#means=means[,c(1:4,6)]
+OO=means[40,]
+OO_lagged=means[41:50,]
 OO_lagged$analysis="OO"
 OO_lagged$lag=as.numeric(OO_lagged$lag)
 OO_lagged=OO_lagged[order(OO_lagged[,5]),]
@@ -154,7 +155,7 @@ OO[1,5]=1
 OO[2,5]=30
 OO$lag=as.numeric(OO$lag)
 
-LOO=means[26:34,]
+LOO=means[31:39,]
 LOO[1,5]="CHLA"
 LOO[2,5]="EKE"
 LOO[3,5]="SLA"
@@ -170,13 +171,13 @@ LOO$lag=1
 LOO2=LOO
 LOO2$lag=30
 LOO=rbind(LOO,LOO2)
-lagged=means[1:25,]
+lagged=means[1:30,]
 lagged=cSplit(lagged, 'analysis', sep="_", drop=F,type.convert=FALSE)
 lagged$lag=as.numeric(lagged$lag)
 
 
-s.mean=ggplot()+geom_line(data=OO_lagged, aes(lag, mean_mean, color="OO_lagged",group=analysis))+geom_ribbon(data=OO_lagged,aes(x=mean_mean,ymax=upper,ymin=lower))+
-geom_line(data=lagged, aes(lag, mean_mean,color=analysis_2,group=analysis_2))+
-  geom_line(data=OO, aes(lag,mean_mean,color="OO")) #+
-  geom_line(data=LOO, aes(lag,mean_mean,color=variable,group=variable))
+s.mean=ggplot()+geom_line(data=OO_lagged, aes(lag, mean, color="OO_lagged",group=analysis))+
+geom_line(data=lagged, aes(lag, mean,color=analysis_2,group=analysis_2))+
+  geom_line(data=OO, aes(lag,mean,color="OO"))+geom_ribbon(data=OO,aes(x=mean,ymax=upper,ymin=lower),fill="blue") #+
+  #geom_line(data=LOO, aes(lag,mean,color=variable,group=variable))
  
