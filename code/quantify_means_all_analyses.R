@@ -99,7 +99,7 @@ for(i in 1:10){
   
 OO=empty_OO[complete.cases(empty_OO),]
 OO_lagged=empty_OO_lagged[complete.cases(empty_OO_lagged),]
-#OO_lagged$lag=substring(OO_lagged$analysis, first=10, last = nchar(OO_lagged$analysis))
+#OO_lagged$lag=substring(OO_lagged$analysis, first=10, last = nchar(OO_lagged$analysis)) a
 LOO=empty_LOO[complete.cases(empty_LOO),]
 lagged_var=empty_lagged_var[complete.cases(empty_lagged_var),]
 #lagged_var$a=substring(lagged_var$analysis, first=10, last = nchar(lagged_var$analysis))
