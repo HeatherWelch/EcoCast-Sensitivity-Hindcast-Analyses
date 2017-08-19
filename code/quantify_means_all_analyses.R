@@ -50,7 +50,7 @@ for(i in 1:10){
     paste0(OO_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",dates[x],"_.grd")))
   a=abs(stack(removefiles(OO))*studyarea)
   b=calc(a,mean)
-  OO=cellStats(b,sum)/ncell(studyarea)
+  OO=cellStats(b,mean)
   OOsd=cellStats(b,sd)
   empty_OO[i,1]=i
   empty_OO[i,2]="OO"
@@ -64,7 +64,7 @@ for(i in 1:10){
       paste0(OO_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",as.Date(dates[x])-OO_lag[ii],"_.grd")))
     a=abs(stack(removefiles(a))*studyarea)
     b=calc(a,mean)
-    bb=cellStats(b,sum)/ncell(studyarea)
+    bb=cellStats(b,mean)
     bbsd=cellStats(b,sd)
     empty_OO_lagged[i*10+ii,1]=i
     empty_OO_lagged[i*10+ii,2]=name
@@ -80,7 +80,7 @@ for(i in 1:10){
       paste0(LOO,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",as.Date(dates[x]),"_",var_names[ii],".grd")))
     a=abs(stack(removefiles(a))*studyarea)
     b=calc(a,mean)
-    bb=cellStats(b,sum)/ncell(studyarea)
+    bb=cellStats(b,mean)
     bbsd=cellStats(b,sd)
     empty_LOO[i*9+ii,1]=i
     empty_LOO[i*9+ii,2]=paste0("LOO",var_names[ii])
@@ -97,7 +97,7 @@ for(i in 1:10){
       paste0(Lagged_dir,"/EcoCast_-0.2 -0.2 -0.05 -0.9 0.9_",as.Date(dates[x]),"_",name,".grd")))
     a=abs(stack(removefiles(a))*studyarea)
     b=calc(a,mean)
-    bb=cellStats(b,sum)/ncell(studyarea)
+    bb=cellStats(b,mean)
     bbsd=cellStats(b,sd)
     empty_lagged_var[i*30+(ii*6)+iii,1]=i
     empty_lagged_var[i*30+(ii*6)+iii,2]=paste0("lagged_",name)
@@ -117,7 +117,8 @@ lagged_var=empty_lagged_var[complete.cases(empty_lagged_var),]
 all=rbind(OO,OO_lagged,LOO,lagged_var)
 #write.csv(all,"/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
 #########
-all=read.csv("~/Desktop/EcoGit/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
+#all=read.csv("~/Desktop/EcoGit/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
+all=read.csv("/Volumes/SeaGate/EcoCast_HW/EcoCastGit_Sensitivity_Hindcast/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/means_all.csv")
 all=all[,2:5]
 
 #all$replicate=as.factor(all$replicate)
@@ -154,6 +155,7 @@ OO[2,]=OO[1,]
 OO[1,5]=1
 OO[2,5]=30
 OO$lag=as.numeric(OO$lag)
+OO$test_3=as.numeric(OO$test_3)
 
 LOO=means[31:39,]
 LOO[1,5]="CHLA"
@@ -178,6 +180,11 @@ lagged$lag=as.numeric(lagged$lag)
 
 s.mean=ggplot()+geom_line(data=OO_lagged, aes(lag, mean, color="OO_lagged",group=analysis))+
 geom_line(data=lagged, aes(lag, mean,color=analysis_2,group=analysis_2))+
-  geom_line(data=OO, aes(lag,mean,color="OO"))+geom_ribbon(data=OO,aes(x=mean,ymax=upper,ymin=lower),fill="blue") #+
-  #geom_line(data=LOO, aes(lag,mean,color=variable,group=variable))
+  geom_line(data=OO, aes(test_3,mean,color="OO"),size=1) +geom_ribbon(data=OO,aes(x=test_3,ymax=upper,ymin=lower,fill="blue"),alpha=.2) +
+  geom_line(data=LOO, aes(lag,mean,color=test_3,group=test_3))
+s.mean
+OO_lagged$field=paste0("OO_lagged_",OO_lagged$lag)
+
+OO_plot=ggplot()+geom_col(data=OO_lagged, aes(field, mean, color=field,group=field))+
+  geom_col(data=OO, aes(analysis,mean,color="OO"),size=1) 
  
