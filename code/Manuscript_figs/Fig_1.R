@@ -10,5 +10,5 @@ usa=readOGR(dsn=path.expand(paste0(data_dir,"/LeatherbackClosure")),layer="Leath
 usa=shapefile(paste0(data_dir,"/cb_2014_us_nation_5m.shp"))
 usa=readOGR(dsn=data_dir, layer="US_EEZ")
 
-test=readOGR(dsn=data_dir,layer=paste0(data_dir,"/US_EEZ"))
+test=readOGR(dsn=data_dir,layer="US_EEZ")
 #####
