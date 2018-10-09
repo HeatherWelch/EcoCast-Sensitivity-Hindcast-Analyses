@@ -132,7 +132,8 @@ final_lines=master+theme(panel.background = element_blank(),axis.title = element
   scale_color_manual("",values=c("OO"="blue","CHLA"="green3","EKE"="red3","SLA"="maroon3","SST"="turquoise3","YWIND"="orange3"))+theme(legend.position="none",legend.key = element_blank())+coord_cartesian(ylim = c(0,.08))+
   scale_y_continuous(expand = c(0, 0))+scale_x_continuous(expand = c(0, 0))+geom_text(aes(x=24.5,y=.078,label="SST"))+geom_text(aes(x=30.5,y=.078,label="SLA"))
 
-png("/Volumes/SeaGate/Operationalization_Sensitivity/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/s.means_error.png",width=1100,height=600,units='px',pointsize=100)
+#png("/Volumes/SeaGate/Operationalization_Sensitivity/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/s.means_error.png",width=1100,height=600,units='px',pointsize=100)
+png("/Volumes/SeaGate/Operationalization_Sensitivity/EcoCast-Sensitivity-Hindcast-Analyses/analysis_DFs/s.means_error2.png",width=14,height=7,units='in',res=600)
 grid.arrange(final,final_lines,ncol=2)
 dev.off()
 
